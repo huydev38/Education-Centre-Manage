@@ -1,0 +1,31 @@
+package com.example.education_center.dto;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.util.Date;
+
+@Data
+public class CourseScheduleDTO {
+    private int id;
+
+    private CourseDTO course;
+
+    private TeacherDTO teacher;
+
+    private boolean status;
+
+    private int dow; //2 la thu 2, 1 la chu nhat
+
+    @NotNull
+    @JsonFormat(pattern = "HH:mm", timezone = "Asia/Ho_Chi_Minh")
+    private Date time_start;
+
+    @NotNull
+    @JsonFormat(pattern = "HH:mm", timezone = "Asia/Ho_Chi_Minh")
+    private Date time_end;
+
+    private RoomDTO room;
+
+}
