@@ -22,4 +22,6 @@ public class Teacher extends TimeAuditable{
     private String description;
 
     private String avatar_url;
+
+    private String name;
 }

@@ -20,6 +20,8 @@ public class TeacherDTO {
 
     private String avatar_url;
 
+    private String name;
+
     @JsonIgnore
     private MultipartFile file;
 

@@ -3,6 +3,7 @@ package com.example.education_center.dto;
 import com.example.education_center.entity.CourseScore;
 import com.example.education_center.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,6 +20,7 @@ public class LearnerDTO {
 
     private UserDTO user;
 
+    @JsonIgnoreProperties("learner")
     private List<CourseScoreDTO> courseScores;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
