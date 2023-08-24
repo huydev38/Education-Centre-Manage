@@ -25,4 +25,7 @@ public class Learner extends TimeAuditable{
 
     @OneToMany(mappedBy = "learner")
     private List<CourseScore> courseScores;
+
+    @ManyToMany(mappedBy = "learners")
+    private List<Course> courses;
 }

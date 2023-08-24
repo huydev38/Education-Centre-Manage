@@ -1,7 +1,4 @@
 package com.example.education_center.dto;
-
-import com.example.education_center.entity.CourseScore;
-import com.example.education_center.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -22,6 +19,9 @@ public class LearnerDTO {
 
     @JsonIgnoreProperties("learner")
     private List<CourseScoreDTO> courseScores;
+
+    @JsonIgnoreProperties("learners")
+    private List<CourseDTO> courses;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Asia/Ho_Chi_Minh")

@@ -17,6 +17,9 @@ public class Course extends TimeAuditable {
 
     private String name;
 
+    private int status; //0 het hieu luc, 1 con hieu luc
+
+
     private double cost;
 
     private Date start_date;
@@ -32,4 +35,10 @@ public class Course extends TimeAuditable {
 
     @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<CourseSchedule> courseSchedules;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="course_register",
+            joinColumns = @JoinColumn(name="course_id"),
+            inverseJoinColumns = @JoinColumn(name="learner_id"))
+    private List<Learner> learners;
 }

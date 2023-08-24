@@ -16,6 +16,8 @@ public class CourseDTO {
     @NotBlank
     private String name;
 
+    private int status;
+
     private AddressDTO address;
 
     private double cost;
@@ -32,6 +34,9 @@ public class CourseDTO {
     private int size;
 
     private int remain;
+
+    @JsonIgnoreProperties("courses")
+    private List<LearnerDTO> learners;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Asia/Ho_Chi_Minh")

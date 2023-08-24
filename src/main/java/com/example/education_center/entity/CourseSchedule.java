@@ -18,8 +18,6 @@ public class CourseSchedule {
     @ManyToOne
     private Teacher teacher;
 
-    private boolean status; //0 het hieu luc, 1 con hieu luc
-
     private int dow; //2 la thu 2, 1 la chu nhat
 
     @Temporal(TemporalType.TIME)

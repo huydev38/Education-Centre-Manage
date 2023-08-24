@@ -1,6 +1,7 @@
 package com.example.education_center.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -10,11 +11,10 @@ import java.util.Date;
 public class CourseScheduleDTO {
     private int id;
 
+    @JsonIgnoreProperties("courseSchedules")
     private CourseDTO course;
 
     private TeacherDTO teacher;
-
-    private boolean status;
 
     private int dow; //2 la thu 2, 1 la chu nhat
 
