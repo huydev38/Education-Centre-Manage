@@ -17,7 +17,7 @@ public class Learner extends TimeAuditable{
 
     private String name;
 
-    private double tuition_fee;
+    private double tuition_fee=0;
 
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
