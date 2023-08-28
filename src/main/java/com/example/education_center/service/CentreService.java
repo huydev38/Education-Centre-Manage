@@ -32,6 +32,9 @@ public class CentreService {
 
     @Transactional
     public void create(CentreDTO centreDTO){
+        for(AddressDTO a: centreDTO.getAddressList()){
+            a.setCentre(centreDTO);
+        }
         centreRepo.save(new ModelMapper().map(centreDTO, Centre.class));
     }
 
@@ -43,6 +46,9 @@ public class CentreService {
     @Transactional
     public CentreDTO update(CentreDTO centreDTO) throws NotFoundException {
         if(centreRepo.findById(centreDTO.getId()).isPresent()){
+            for(AddressDTO a: centreDTO.getAddressList()){
+                a.setCentre(centreDTO);
+            }
             centreRepo.save(new ModelMapper().map(centreDTO, Centre.class));
         }else{
             throw new NotFoundException("Not found centre");
@@ -72,7 +78,7 @@ public class CentreService {
         PageRequest pageRequest = PageRequest.of(searchDTO.getCurrentPage(),searchDTO.getSize(),sortBy);
         Page<Centre> page = centreRepo.findAll(pageRequest);
 
-        if(!StringUtils.hasText(searchDTO.getKeyword())) {
+        if(StringUtils.hasText(searchDTO.getKeyword())) {
             page = centreRepo.searchByName("%" + searchDTO.getKeyword() + "%", pageRequest);
         }
         PageDTO<List<CentreDTO>> pageDTO = new PageDTO<>();

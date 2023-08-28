@@ -26,3 +26,5 @@ public class CourseScoreDTO {
     @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
 }
+
+//tim diem va noti can phai co thong tin khoa hoc khong cho phep chi nhap thoi gian

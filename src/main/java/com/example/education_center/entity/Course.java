@@ -17,13 +17,15 @@ public class Course extends TimeAuditable {
 
     private String name;
 
-    private int status; //0 het hieu luc, 1 con hieu luc
+    private int status; //0 da ket thuc, 1 dang dien ra, 2 cho phep dang ky, 3 khong cho phep dang ky
 
 
     private double cost;
 
+    @Temporal(TemporalType.DATE)
     private Date start_date;
 
+    @Temporal(TemporalType.DATE)
     private Date end_date;
 
     private String description;

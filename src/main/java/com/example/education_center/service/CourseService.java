@@ -1,11 +1,12 @@
 package com.example.education_center.service;
 
-import com.example.education_center.dto.CourseDTO;
-import com.example.education_center.dto.CourseScheduleDTO;
-import com.example.education_center.dto.LearnerDTO;
-import com.example.education_center.dto.PageDTO;
+import com.example.education_center.dto.*;
 import com.example.education_center.dto.search.SearchCourseDTO;
+import com.example.education_center.dto.search.SearchNotiDTO;
+import com.example.education_center.dto.search.SearchScoreDTO;
 import com.example.education_center.entity.Course;
+import com.example.education_center.entity.CourseNoti;
+import com.example.education_center.entity.CourseScore;
 import com.example.education_center.entity.Learner;
 import com.example.education_center.exception.NotAvailableException;
 import com.example.education_center.exception.NotFoundException;
@@ -43,6 +44,13 @@ public class CourseService {
         return new ModelMapper().map(course, CourseDTO.class);
     }
 
+    public CourseNotiDTO convertNoti(CourseNoti courseNoti){
+        return new ModelMapper().map(courseNoti, CourseNotiDTO.class);
+    }
+
+    public CourseScoreDTO convertScore(CourseScore courseScore){
+        return new ModelMapper().map(courseScore, CourseScoreDTO.class);
+    }
 
     public int checkAvailable(CourseDTO courseDTO){
         //loi 1: teacher khong ranh
@@ -96,17 +104,25 @@ public class CourseService {
     }
 
     @Transactional
-    public void courseRegister(LearnerDTO learnerDTO, CourseDTO courseDTO){
-        if(learnerRepo.findById(learnerDTO.getId()).isPresent()&&courseRepo.findById(courseDTO.getId()).isPresent()){
-           Course course = courseRepo.findById(courseDTO.getId()).orElse(null);
-           Learner learner = learnerRepo.findById(learnerDTO.getId()).orElse(null);
-            assert course != null;
-            course.getLearners().add(new ModelMapper().map(learnerDTO, Learner.class));
-            courseRepo.save(course);
-            assert learner != null;
-            learner.getCourses().add(new ModelMapper().map(courseDTO, Course.class));
-            learnerRepo.save(learner);
+    public void courseRegister(LearnerDTO learnerDTO, CourseDTO courseDTO) throws NotAvailableException, NotFoundException {
+        if (learnerRepo.findById(learnerDTO.getId()).isPresent() && courseRepo.findById(courseDTO.getId()).isPresent()) {
+            Course course = courseRepo.findById(courseDTO.getId()).orElse(null);
+            Learner learner = learnerRepo.findById(learnerDTO.getId()).orElse(null);
+            if (course == null || learner == null) {
+                throw new NotFoundException("Cant find course or learner");
+            } else {
+                if (course.getStatus() != 3) {
+                    course.getLearners().add(new ModelMapper().map(learnerDTO, Learner.class));
+                    course.setRemain(course.getRemain() - 1);
 
+                    courseRepo.save(course);
+                    learner.setTuition_fee(learner.getTuition_fee() + course.getCost());
+                    learner.getCourses().add(new ModelMapper().map(courseDTO, Course.class));
+                    learnerRepo.save(learner);
+                } else {
+                    throw new NotAvailableException("Cannot enroll to this course");
+                }
+            }
         }
     }
 
@@ -148,4 +164,115 @@ public class CourseService {
         return pageDTO;
     }
 
+    @Transactional
+    public void addNoti(CourseNotiDTO courseNotiDTO){
+        courseNotiRepo.save(new ModelMapper().map(courseNotiDTO, CourseNoti.class));
+    }
+
+    @Transactional
+    public void deleteNoti(int id){
+        courseNotiRepo.deleteById(id);
+    }
+
+    @Transactional
+    public void updateNoti(CourseNotiDTO courseNotiDTO){
+        courseNotiRepo.save(new ModelMapper().map(courseNotiDTO, CourseNoti.class));
+    }
+
+    public PageDTO<List<CourseNotiDTO>> searchNoti(SearchNotiDTO searchNotiDTO){
+        Sort sortBy=Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
+
+
+        //sort theo yeu cau
+        if(StringUtils.hasText(searchNotiDTO.getSortedField())){ //check xem co empty khong
+            sortBy=Sort.by(searchNotiDTO.getSortedField());
+        }
+        if(searchNotiDTO.getCurrentPage()==null){
+            searchNotiDTO.setCurrentPage(0);
+        }
+        if(searchNotiDTO.getSize()==null){
+            searchNotiDTO.setSize(20);
+        }
+
+        //tao PageRequest de truyen vao Pageable
+        PageRequest pageRequest = PageRequest.of(searchNotiDTO.getCurrentPage(),searchNotiDTO.getSize(),sortBy);
+        Page<CourseNoti> page = courseNotiRepo.findAll(pageRequest);
+
+        if(searchNotiDTO.getCourseDTO()!=null&&searchNotiDTO.getStart_date()==null&&searchNotiDTO.getEnd_date()==null){
+            page = courseNotiRepo.searchByCourse(searchNotiDTO.getCourseDTO().getId(), pageRequest);
+        }else if(searchNotiDTO.getCourseDTO()!=null&&searchNotiDTO.getStart_date()!=null&&searchNotiDTO.getEnd_date()!=null){
+            page = courseNotiRepo.searchByCourseAndDate(searchNotiDTO.getCourseDTO().getId(),searchNotiDTO.getStart_date(), searchNotiDTO.getEnd_date(), pageRequest);
+        }
+        PageDTO<List<CourseNotiDTO>> pageDTO = new PageDTO<>();
+        pageDTO.setTotalPages(page.getTotalPages());
+        pageDTO.setTotalElements(page.getTotalElements());
+        pageDTO.setSize(page.getSize());
+        //List<User> users = page.getContent();
+        List<CourseNotiDTO> courseDTOS = page.get().map(u->convertNoti(u)).collect(Collectors.toList());
+
+        //T: List<UserDTO>
+        pageDTO.setData(courseDTOS);
+        return pageDTO;
+    }
+
+
+
+    @Transactional
+    public void addCourseScore(List<CourseScoreDTO> courseScoreDTO){
+        for(CourseScoreDTO c: courseScoreDTO){
+            courseScoreRepo.save(new ModelMapper().map(c, CourseScore.class));
+        }
+    }
+
+    @Transactional
+    public void updateCourseScore(CourseScoreDTO courseScoreDTO){
+        if(courseScoreRepo.findById(courseScoreDTO.getId()).isPresent()){
+            courseScoreRepo.save(new ModelMapper().map(courseScoreDTO, CourseScore.class));
+        }
+    }
+
+    @Transactional
+    public void deteleCourseScore(CourseScoreDTO courseScoreDTO){
+        courseScoreRepo.deleteById(courseScoreDTO.getId());
+    }
+
+    public PageDTO<List<CourseScoreDTO>> searchScore(SearchScoreDTO searchScoreDTO) {
+        Sort sortBy = Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
+
+
+        //sort theo yeu cau
+        if (StringUtils.hasText(searchScoreDTO.getSortedField())) { //check xem co empty khong
+            sortBy = Sort.by(searchScoreDTO.getSortedField());
+        }
+        if (searchScoreDTO.getCurrentPage() == null) {
+            searchScoreDTO.setCurrentPage(0);
+        }
+        if (searchScoreDTO.getSize() == null) {
+            searchScoreDTO.setSize(20);
+        }
+
+        //tao PageRequest de truyen vao Pageable
+        PageRequest pageRequest = PageRequest.of(searchScoreDTO.getCurrentPage(), searchScoreDTO.getSize(), sortBy);
+        Page<CourseScore> page = courseScoreRepo.findAll(pageRequest);
+
+        if (searchScoreDTO.getCourseDTO() != null && searchScoreDTO.getStart_date() == null && searchScoreDTO.getEnd_date() == null && searchScoreDTO.getLearnerDTO() == null) {
+            page = courseScoreRepo.searchByCourse(searchScoreDTO.getCourseDTO().getId(), pageRequest);
+        } else if (searchScoreDTO.getCourseDTO() != null && searchScoreDTO.getStart_date() != null && searchScoreDTO.getEnd_date() != null && searchScoreDTO.getLearnerDTO() == null) {
+            page = courseScoreRepo.searchByCourseAndDate(searchScoreDTO.getCourseDTO().getId(), searchScoreDTO.getStart_date(), searchScoreDTO.getEnd_date(), pageRequest);
+        } else if (searchScoreDTO.getCourseDTO() == null && searchScoreDTO.getStart_date() != null && searchScoreDTO.getEnd_date() != null && searchScoreDTO.getLearnerDTO() != null) {
+            page = courseScoreRepo.searchByLearnerAndDate(searchScoreDTO.getLearnerDTO().getId(), searchScoreDTO.getStart_date(), searchScoreDTO.getEnd_date(), pageRequest);
+        } else if (searchScoreDTO.getCourseDTO() == null && searchScoreDTO.getStart_date() == null && searchScoreDTO.getEnd_date() == null && searchScoreDTO.getLearnerDTO() != null) {
+            page = courseScoreRepo.searchByLearner(searchScoreDTO.getLearnerDTO().getId(), pageRequest);
+        }
+        PageDTO<List<CourseScoreDTO>> pageDTO = new PageDTO<>();
+        pageDTO.setTotalPages(page.getTotalPages());
+        pageDTO.setTotalElements(page.getTotalElements());
+        pageDTO.setSize(page.getSize());
+        //List<User> users = page.getContent();
+        List<CourseScoreDTO> courseDTOS = page.get().map(u -> convertScore(u)).collect(Collectors.toList());
+
+        //T: List<UserDTO>
+        pageDTO.setData(courseDTOS);
+        return pageDTO;
+    }
 }

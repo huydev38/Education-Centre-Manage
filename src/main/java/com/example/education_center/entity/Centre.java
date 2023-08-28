@@ -16,7 +16,7 @@ public class Centre extends TimeAuditable {
 
     private String name;
 
-    @OneToMany(mappedBy = "centre", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "centre", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Address> addressList;
 
 }

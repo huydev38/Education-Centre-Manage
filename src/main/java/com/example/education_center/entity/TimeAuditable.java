@@ -1,8 +1,6 @@
 package com.example.education_center.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,9 +14,11 @@ import java.util.Date;
 
 public abstract class TimeAuditable {
     @CreatedDate //auto gen date
+    @Temporal(TemporalType.DATE)
     @Column(updatable = false)
     private Date createdAt;
 
     @LastModifiedDate
+    @Temporal(TemporalType.DATE)
     private Date updatedAt;
 }
