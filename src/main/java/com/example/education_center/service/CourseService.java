@@ -55,6 +55,10 @@ public class CourseService {
     public int checkAvailable(CourseDTO courseDTO){
         //loi 1: teacher khong ranh
         //loi 2: phong hoc khong trong
+        //loi 3: thoi gian course sai
+        if(courseDTO.getStart_date().after(courseDTO.getEnd_date())){
+            return 3;
+        }
         for( CourseScheduleDTO l: courseDTO.getCourseSchedules()){
             if(courseScheduleRepo.searchByTeacherAndDateTime(l.getTeacher().getId(),l.getDow(),l.getTime_start(), courseDTO.getStart_date())!=null){
                 return 1;
@@ -77,8 +81,10 @@ public class CourseService {
         }
         if (checkAvailable(courseDTO)==0) {
             courseRepo.save(new ModelMapper().map(courseDTO, Course.class));
-        }else if(checkAvailable(courseDTO)==1){
+        }else if(checkAvailable(courseDTO)==1) {
             throw new NotAvailableException("Teacher's is not available");
+        }else if(checkAvailable(courseDTO)==3){
+            throw new NotAvailableException("Date invalid");
         }else{
             throw new NotAvailableException("Room is not available");
         }

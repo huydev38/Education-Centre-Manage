@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,9 +34,7 @@ public class LearnerService {
     @Transactional
     public void create(LearnerDTO learnerDTO){
         UserDTO userDTO = learnerDTO.getUser();
-        //TODO
-        //thieu doan set password bao mat
-        //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
         learnerDTO.setUser(userDTO);
         learnerRepo.save(new ModelMapper().map(learnerDTO, Learner.class));
     }
@@ -44,9 +43,7 @@ public class LearnerService {
     public void update(LearnerDTO learnerDTO) throws NotFoundException {
         if(learnerRepo.findById(learnerDTO.getId()).isPresent()){
             UserDTO userDTO = learnerDTO.getUser();
-            //TODO
-            //thieu doan set password bao mat
-            //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+            userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
             learnerDTO.setUser(userDTO);
             learnerRepo.save(new ModelMapper().map(learnerDTO, Learner.class));
         }else{

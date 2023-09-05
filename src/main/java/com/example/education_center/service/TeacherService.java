@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -34,9 +35,7 @@ public class TeacherService {
     @Transactional
     public void create(TeacherDTO teacherDTO){
         UserDTO userDTO = teacherDTO.getUser();
-        //TODO
-        //thieu doan set password bao mat
-        //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
         teacherDTO.setUser(userDTO);
         teacherRepo.save(new ModelMapper().map(teacherDTO, Teacher.class));
     }
@@ -45,9 +44,7 @@ public class TeacherService {
     public void update(TeacherDTO teacherDTO) throws NotFoundException {
         if(teacherRepo.findById(teacherDTO.getId()).isPresent()){
             UserDTO userDTO = teacherDTO.getUser();
-            //TODO
-            //thieu doan set password bao mat
-            //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+            userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
             teacherDTO.setUser(userDTO);
             teacherRepo.save(new ModelMapper().map(teacherDTO, Teacher.class));
         }else{

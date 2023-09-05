@@ -17,6 +17,7 @@ public class Course extends TimeAuditable {
 
     private String name;
 
+    //TODO sua lai logic, tach 0 1 va 2 3
     private int status; //0 da ket thuc, 1 dang dien ra, 2 cho phep dang ky, 3 khong cho phep dang ky
 
 
