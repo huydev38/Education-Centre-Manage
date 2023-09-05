@@ -65,6 +65,10 @@ public class CourseService {
         }
         return 0;
     }
+
+
+
+
     @Transactional
     public void createCourse(CourseDTO courseDTO) throws NotAvailableException {
         courseDTO.setName(courseDTO.getName() + courseDTO.getAddress() + courseDTO.getStart_date().toString());
@@ -275,4 +279,15 @@ public class CourseService {
         pageDTO.setData(courseDTOS);
         return pageDTO;
     }
+
+    public double getGPA(SearchScoreDTO searchScoreDTO){
+        double gpa = 0;
+        gpa = courseRepo.avgScore(searchScoreDTO.getCourseDTO().getId(), searchScoreDTO.getLearnerDTO().getId());
+        return gpa;
+    }
+
+    public CourseDTO findById(int id) {
+        return new ModelMapper().map(courseRepo.findById(id), CourseDTO.class);
+    }
+
 }

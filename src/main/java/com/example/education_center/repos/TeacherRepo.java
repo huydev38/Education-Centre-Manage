@@ -10,11 +10,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface TeacherRepo extends JpaRepository<Teacher, Integer> {
     @Query("select t from Teacher t where t.user.phone=:x")
-    Teacher searchByPhone(@Param("x") String phone);
+    Page<Teacher> searchByPhone(@Param("x") String phone, Pageable pageable);
 
-    @Query("select t from Teacher t where t.user.email=:x")
-    Teacher seachByEmail(@Param("x") String email);
+
 
     @Query("select t from Teacher t where t.name like :x")
     Page<Teacher> searchByName(@Param("x") String s, Pageable pageable);
+
+    @Query("select t from Teacher t where t.user.email =:x")
+    Page<Teacher> searchByMail(@Param("x") String email, Pageable pageRequest);
 }

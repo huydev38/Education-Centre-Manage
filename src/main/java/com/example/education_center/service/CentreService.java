@@ -3,6 +3,7 @@ package com.example.education_center.service;
 import com.example.education_center.dto.AddressDTO;
 import com.example.education_center.dto.CentreDTO;
 import com.example.education_center.dto.PageDTO;
+import com.example.education_center.dto.PurchaseDTO;
 import com.example.education_center.dto.search.SearchAddressDTO;
 import com.example.education_center.dto.search.SearchDTO;
 import com.example.education_center.entity.Address;
@@ -90,5 +91,9 @@ public class CentreService {
         pageDTO.setData(centreDTOS);
         return pageDTO;
 
+    }
+
+    public CentreDTO findById(int id) {
+        return new ModelMapper().map(centreRepo.findById(id), CentreDTO.class);
     }
 }

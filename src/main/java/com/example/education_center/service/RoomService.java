@@ -1,6 +1,7 @@
 package com.example.education_center.service;
 
 import com.example.education_center.dto.AddressDTO;
+import com.example.education_center.dto.LearnerDTO;
 import com.example.education_center.dto.PageDTO;
 import com.example.education_center.dto.RoomDTO;
 import com.example.education_center.dto.search.SearchAddressDTO;
@@ -83,6 +84,8 @@ public class RoomService {
 
     }
 
-
+    public RoomDTO findById(int id) {
+        return new ModelMapper().map(roomRepo.findById(id), RoomDTO.class);
+    }
 
 }

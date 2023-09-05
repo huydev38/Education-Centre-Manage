@@ -2,6 +2,7 @@ package com.example.education_center.service;
 
 import com.example.education_center.dto.AddressDTO;
 import com.example.education_center.dto.PageDTO;
+import com.example.education_center.dto.PurchaseDTO;
 import com.example.education_center.dto.search.SearchAddressDTO;
 import com.example.education_center.entity.Address;
 import com.example.education_center.exception.NotFoundException;
@@ -83,5 +84,9 @@ public class AddressService {
         pageDTO.setData(addressDTOS);
         return pageDTO;
 
+    }
+
+    public AddressDTO findById(int id) {
+        return new ModelMapper().map(addressRepo.findById(id), AddressDTO.class);
     }
 }

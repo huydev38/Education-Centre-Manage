@@ -34,6 +34,7 @@ public class TeacherService {
     @Transactional
     public void create(TeacherDTO teacherDTO){
         UserDTO userDTO = teacherDTO.getUser();
+        //TODO
         //thieu doan set password bao mat
         //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
         teacherDTO.setUser(userDTO);
@@ -44,6 +45,7 @@ public class TeacherService {
     public void update(TeacherDTO teacherDTO) throws NotFoundException {
         if(teacherRepo.findById(teacherDTO.getId()).isPresent()){
             UserDTO userDTO = teacherDTO.getUser();
+            //TODO
             //thieu doan set password bao mat
             //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
             teacherDTO.setUser(userDTO);
@@ -58,45 +60,46 @@ public class TeacherService {
         teacherRepo.deleteById(id);
     }
 
-    public PageDTO<List<TeacherDTO>> search(SearchTeacherDTO searchTeacherDTO){
-        Sort sortBy=Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
+    public PageDTO<List<TeacherDTO>> search(SearchTeacherDTO searchTeacherDTO) {
+        Sort sortBy = Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
 
 
         //sort theo yeu cau
-        if(StringUtils.hasText(searchTeacherDTO.getSortedField())){ //check xem co empty khong
-            sortBy=Sort.by(searchTeacherDTO.getSortedField());
+        if (StringUtils.hasText(searchTeacherDTO.getSortedField())) { //check xem co empty khong
+            sortBy = Sort.by(searchTeacherDTO.getSortedField());
         }
-        if(searchTeacherDTO.getCurrentPage()==null){
+        if (searchTeacherDTO.getCurrentPage() == null) {
             searchTeacherDTO.setCurrentPage(0);
         }
-        if(searchTeacherDTO.getSize()==null){
+        if (searchTeacherDTO.getSize() == null) {
             searchTeacherDTO.setSize(20);
         }
 
         //tao PageRequest de truyen vao Pageable
-        PageRequest pageRequest = PageRequest.of(searchTeacherDTO.getCurrentPage(),searchTeacherDTO.getSize(),sortBy);
+        PageRequest pageRequest = PageRequest.of(searchTeacherDTO.getCurrentPage(), searchTeacherDTO.getSize(), sortBy);
         Page<Teacher> page = teacherRepo.findAll(pageRequest);
 
-        if(StringUtils.hasText(searchTeacherDTO.getKeyword())){
-            page = teacherRepo.searchByName("%"+ searchTeacherDTO.getKeyword()+"%", pageRequest);
+        if (StringUtils.hasText(searchTeacherDTO.getKeyword())) {
+            page = teacherRepo.searchByName("%" + searchTeacherDTO.getKeyword() + "%", pageRequest);
+        } else if (StringUtils.hasText(searchTeacherDTO.getEmail())) {
+            page = teacherRepo.searchByMail(searchTeacherDTO.getEmail(), pageRequest);
+        } else if (StringUtils.hasText(searchTeacherDTO.getPhone())) {
+            page = teacherRepo.searchByPhone(searchTeacherDTO.getPhone(), pageRequest);
         }
-        PageDTO<List<TeacherDTO>> pageDTO = new PageDTO<>();
-        pageDTO.setTotalPages(page.getTotalPages());
-        pageDTO.setTotalElements(page.getTotalElements());
-        pageDTO.setSize(page.getSize());
-        //List<User> users = page.getContent();
-        List<TeacherDTO> teacherDTOS = page.get().map(u->convert(u)).collect(Collectors.toList());
+            PageDTO<List<TeacherDTO>> pageDTO = new PageDTO<>();
+            pageDTO.setTotalPages(page.getTotalPages());
+            pageDTO.setTotalElements(page.getTotalElements());
+            pageDTO.setSize(page.getSize());
+            //List<User> users = page.getContent();
+            List<TeacherDTO> teacherDTOS = page.get().map(u -> convert(u)).collect(Collectors.toList());
 
-        //T: List<UserDTO>
-        pageDTO.setData(teacherDTOS);
-        return pageDTO;
-    }
+            //T: List<UserDTO>
+            pageDTO.setData(teacherDTOS);
+            return pageDTO;
+        }
 
-    public TeacherDTO searchByPhone(SearchLearnerDTO searchLearnerDTO){
-        return convert(teacherRepo.searchByPhone(searchLearnerDTO.getPhone()));
-    }
 
-    public TeacherDTO searchByEmail(SearchLearnerDTO searchLearnerDTO){
-        return convert(teacherRepo.seachByEmail(searchLearnerDTO.getEmail()));
+    public TeacherDTO findById(int id) {
+        return new ModelMapper().map(teacherRepo.findById(id), TeacherDTO.class);
     }
 }

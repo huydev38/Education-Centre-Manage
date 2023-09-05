@@ -23,7 +23,7 @@ public class Learner extends TimeAuditable{
             fetch = FetchType.EAGER)
     private User user;
 
-    @OneToMany(mappedBy = "learner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "learner", fetch = FetchType.LAZY)
     private List<CourseScore> courseScores;
 
     @ManyToMany(mappedBy = "learners", fetch = FetchType.EAGER)

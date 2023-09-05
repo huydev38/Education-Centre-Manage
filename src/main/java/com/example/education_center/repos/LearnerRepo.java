@@ -13,8 +13,11 @@ public interface LearnerRepo extends JpaRepository<Learner, Integer> {
     Page<Learner> searchByName(@Param("x") String keyword, Pageable pageable);
 
     @Query("select l from Learner l where l.user.phone = :x")
-    Learner searchByPhone(@Param("x") String phone);
+    Page<Learner> searchByPhone(@Param("x") String phone, Pageable pageable);
 
     @Query("select l from Learner l where l.user.email = :x")
-    Learner seachByEmail(@Param("x") String email);
+    Page<Learner> seachByEmail(@Param("x") String email, Pageable pageable);
+
+    @Query("select l FROM Learner l where l.user.id =:x")
+    Learner findByUserId(@Param("x") int id);
 }

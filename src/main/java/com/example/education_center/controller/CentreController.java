@@ -1,11 +1,13 @@
 package com.example.education_center.controller;
 
+import com.example.education_center.dto.AddressDTO;
 import com.example.education_center.dto.CentreDTO;
 import com.example.education_center.dto.PageDTO;
 import com.example.education_center.dto.ResponseDTO;
 import com.example.education_center.dto.search.SearchDTO;
 import com.example.education_center.exception.NotFoundException;
 import com.example.education_center.service.CentreService;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,7 @@ public class CentreController {
     @PutMapping("/")
     public ResponseDTO<CentreDTO> updateCentre(@RequestBody CentreDTO centreDTO) throws NotFoundException {
         centreService.update(centreDTO);
-        return ResponseDTO.<CentreDTO>builder().msg("Success").status(200).data(centreDTO).build();
+        return ResponseDTO.<CentreDTO>builder().msg("Success").status(200).data(centreService.findById(centreDTO.getId())).build();
     }
 
     @DeleteMapping("/")
@@ -43,5 +45,10 @@ public class CentreController {
     @GetMapping("/search")
     public ResponseDTO<PageDTO<List<CentreDTO>>> searchCentre(@RequestBody SearchDTO searchDTO){
         return ResponseDTO.<PageDTO<List<CentreDTO>>>builder().msg("Success").data(centreService.search(searchDTO)).status(200).build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseDTO<CentreDTO> getCenter(@PathParam("id") int id){
+        return ResponseDTO.<CentreDTO>builder().data(centreService.findById(id)).build();
     }
 }

@@ -1,14 +1,11 @@
 package com.example.education_center.service;
-import com.example.education_center.dto.AddressDTO;
+import com.example.education_center.dto.LearnerDTO;
 import com.example.education_center.dto.PageDTO;
 import com.example.education_center.dto.PurchaseDTO;
-import com.example.education_center.dto.UserDTO;
-import com.example.education_center.dto.search.SearchAddressDTO;
-import com.example.education_center.dto.search.SearchDTO;
 import com.example.education_center.dto.search.SearchPurchaseDTO;
-import com.example.education_center.entity.Address;
+import com.example.education_center.entity.Learner;
 import com.example.education_center.entity.Purchase;
-import com.example.education_center.entity.User;
+import com.example.education_center.repos.LearnerRepo;
 import com.example.education_center.repos.PurchaseRepo;
 import jakarta.transaction.Transactional;
 import lombok.Data;
@@ -29,11 +26,19 @@ public class PurchaseService {
     @Autowired
     PurchaseRepo purchaseRepo;
 
+    @Autowired
+    LearnerRepo learnerRepo;
+
     public PurchaseDTO convert(Purchase purchase){
         return new ModelMapper().map(purchase, PurchaseDTO.class);
     }
     @Transactional
     public void create(PurchaseDTO purchaseDTO){
+        if(learnerRepo.findByUserId(purchaseDTO.getUser().getId())!=null){
+            Learner learner = learnerRepo.findByUserId(purchaseDTO.getUser().getId());
+            learner.setTuition_fee(learner.getTuition_fee()-purchaseDTO.getAmount());
+            learnerRepo.save(learner);
+        }
         purchaseRepo.save(new ModelMapper().map(purchaseDTO, Purchase.class));
     }
 
@@ -89,5 +94,9 @@ public class PurchaseService {
         pageDTO.setData(purchaseDTOS);
         return pageDTO;
 
+    }
+
+    public PurchaseDTO findById(int id) {
+        return new ModelMapper().map(purchaseRepo.findById(id), PurchaseDTO.class);
     }
 }

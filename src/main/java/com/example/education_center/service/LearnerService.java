@@ -1,14 +1,10 @@
 package com.example.education_center.service;
 
-import com.example.education_center.dto.AddressDTO;
 import com.example.education_center.dto.LearnerDTO;
 import com.example.education_center.dto.PageDTO;
 import com.example.education_center.dto.UserDTO;
-import com.example.education_center.dto.search.SearchAddressDTO;
 import com.example.education_center.dto.search.SearchLearnerDTO;
-import com.example.education_center.entity.Address;
 import com.example.education_center.entity.Learner;
-import com.example.education_center.entity.User;
 import com.example.education_center.exception.NotFoundException;
 import com.example.education_center.repos.LearnerRepo;
 import jakarta.transaction.Transactional;
@@ -28,6 +24,8 @@ public class LearnerService {
     @Autowired
     LearnerRepo learnerRepo;
 
+
+
     public LearnerDTO convert(Learner learner){
         return new ModelMapper().map(learner, LearnerDTO.class);
     }
@@ -35,6 +33,7 @@ public class LearnerService {
     @Transactional
     public void create(LearnerDTO learnerDTO){
         UserDTO userDTO = learnerDTO.getUser();
+        //TODO
         //thieu doan set password bao mat
         //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
         learnerDTO.setUser(userDTO);
@@ -45,6 +44,7 @@ public class LearnerService {
     public void update(LearnerDTO learnerDTO) throws NotFoundException {
         if(learnerRepo.findById(learnerDTO.getId()).isPresent()){
             UserDTO userDTO = learnerDTO.getUser();
+            //TODO
             //thieu doan set password bao mat
             //userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
             learnerDTO.setUser(userDTO);
@@ -53,6 +53,8 @@ public class LearnerService {
             throw new NotFoundException("Not found Learner");
         }
     }
+
+
 
     @Transactional
     public void delete(int id){
@@ -80,6 +82,10 @@ public class LearnerService {
 
         if(StringUtils.hasText(searchLearnerDTO.getKeyword())){
             page = learnerRepo.searchByName("%"+ searchLearnerDTO.getKeyword()+"%", pageRequest);
+        }else if(StringUtils.hasText(searchLearnerDTO.getPhone())){
+            page = learnerRepo.searchByPhone(searchLearnerDTO.getPhone(), pageRequest);
+        }else if(StringUtils.hasText(searchLearnerDTO.getEmail())){
+            page = learnerRepo.seachByEmail(searchLearnerDTO.getEmail(), pageRequest);
         }
         PageDTO<List<LearnerDTO>> pageDTO = new PageDTO<>();
         pageDTO.setTotalPages(page.getTotalPages());
@@ -93,11 +99,7 @@ public class LearnerService {
         return pageDTO;
     }
 
-    public LearnerDTO searchByPhone(SearchLearnerDTO searchLearnerDTO){
-        return convert(learnerRepo.searchByPhone(searchLearnerDTO.getPhone()));
-    }
-
-    public LearnerDTO searchByEmail(SearchLearnerDTO searchLearnerDTO){
-        return convert(learnerRepo.seachByEmail(searchLearnerDTO.getEmail()));
+    public LearnerDTO findById(int id) {
+        return new ModelMapper().map(learnerRepo.findById(id), LearnerDTO.class);
     }
 }

@@ -3,6 +3,7 @@ import com.example.education_center.dto.AddressDTO;
 import com.example.education_center.dto.ResponseDTO;
 import com.example.education_center.exception.NotFoundException;
 import com.example.education_center.service.AddressService;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,15 +23,22 @@ public class AddressController {
         return ResponseDTO.<Void>builder().msg("Success").status(200).build();
     }
 
+    @PutMapping("/")
     public ResponseDTO<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO) throws NotFoundException {
         addressService.update(addressDTO);
-        return ResponseDTO.<AddressDTO>builder().data(addressDTO).msg("Success").status(200).build();
+        return ResponseDTO.<AddressDTO>builder().data(addressService.findById(addressDTO.getId())).msg("Success").status(200).build();
     }
 
+    @DeleteMapping("/")
     public ResponseDTO<Void> deleteAddress(@RequestParam("id") int id){
         addressService.delete(id);
         return ResponseDTO.<Void>builder().msg("Success").status(200).build();
     }
 
+
+    @GetMapping("/{id}")
+    public ResponseDTO<AddressDTO> getAddress(@PathParam("id") int id){
+        return ResponseDTO.<AddressDTO>builder().data(addressService.findById(id)).build();
+    }
 
 }
