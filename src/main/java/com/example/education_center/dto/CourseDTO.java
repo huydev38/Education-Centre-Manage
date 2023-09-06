@@ -1,5 +1,7 @@
 package com.example.education_center.dto;
 
+import com.example.education_center.entity.CourseNoti;
+import com.example.education_center.entity.CourseScore;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +20,8 @@ public class CourseDTO {
 
     private int status;
 
+    private int isOpen;
+
     private AddressDTO address;
 
     private double cost;
@@ -27,6 +31,13 @@ public class CourseDTO {
     private Date end_date;
 
     private String description;
+
+    @JsonIgnoreProperties("course")
+    private List<CourseNotiDTO> courseNotis;
+
+    @JsonIgnoreProperties("course")
+    private List<CourseScore> courseScores;
+
 
     @JsonIgnoreProperties("course")
     private List<CourseScheduleDTO> courseSchedules;

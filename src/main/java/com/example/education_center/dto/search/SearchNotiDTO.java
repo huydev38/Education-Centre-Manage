@@ -1,6 +1,7 @@
 package com.example.education_center.dto.search;
 
 import com.example.education_center.dto.CourseDTO;
+import com.example.education_center.dto.LearnerDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

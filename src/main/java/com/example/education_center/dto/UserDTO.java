@@ -12,6 +12,10 @@ public class UserDTO {
 
     private int id;
 
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy", timezone = "Asia/Ho_Chi_Minh")
+    private Date birthdate;
+
     @NotBlank
     private String username;
 

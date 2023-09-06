@@ -25,6 +25,9 @@ public class LearnerService {
     @Autowired
     LearnerRepo learnerRepo;
 
+    @Autowired
+    CourseService courseService;
+
 
 
     public LearnerDTO convert(Learner learner){
@@ -99,4 +102,11 @@ public class LearnerService {
     public LearnerDTO findById(int id) {
         return new ModelMapper().map(learnerRepo.findById(id), LearnerDTO.class);
     }
+
+    public LearnerDTO findByUserId(int id){
+        return new ModelMapper().map(learnerRepo.findByUserId(id), LearnerDTO.class);
+
+    }
+
+
 }

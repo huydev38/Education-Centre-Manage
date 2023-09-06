@@ -5,6 +5,7 @@ import com.example.education_center.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -14,9 +15,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 public class ExceptionController{
     @ExceptionHandler({NotFoundException.class})
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ResponseDTO<String> notFound(NotFoundException e){
+    public ResponseEntity<Object> notFound(NotFoundException e){
 
-        return ResponseDTO.<String>builder().status(404).msg("No data").build();
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
 }

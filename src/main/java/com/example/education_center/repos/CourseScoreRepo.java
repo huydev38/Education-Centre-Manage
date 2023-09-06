@@ -23,4 +23,10 @@ public interface CourseScoreRepo extends JpaRepository<CourseScore, Integer> {
 
     @Query("select s from CourseScore s where s.learner.id =:x")
     Page<CourseScore> searchByLearner(@Param("x") int id, Pageable pageable);
+
+    @Query("select avg(c.grade) from CourseScore c where c.course.id =:x and c.learner.id = :y")
+    double avgScore(@Param("x") int course_id, @Param("y") int learner_id);
+
+    @Query("select c from CourseScore c where c.course.id =:x and c.learner.id = :y")
+    Page<CourseScore> searchByLearnerAndCourse(@Param("y") int id, @Param("x") int id1, Pageable pageable);
 }

@@ -22,6 +22,5 @@ public interface CourseRepo extends JpaRepository<Course,Integer> {
     Page<Course> searchByDate(@Param("s") Date start_date, @Param("e") Date end_date, @Param("y") int status, Pageable pageable);
 
 
-    @Query("select avg(c.grade) from CourseScore c where c.course.id =:x and c.learner.id = :y")
-    double avgScore(@Param("x") int course_id, @Param("y") int learner_id);
+
 }

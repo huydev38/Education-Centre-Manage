@@ -17,8 +17,10 @@ public class Course extends TimeAuditable {
 
     private String name;
 
-    //TODO sua lai logic, tach 0 1 va 2 3
-    private int status; //0 da ket thuc, 1 dang dien ra, 2 cho phep dang ky, 3 khong cho phep dang ky
+    private int status; //0 da ket thuc, 1 dang dien ra,
+
+
+    private int isOpen; //1 cho phep dang ky, 0 khong cho phep dang ky
 
 
     private double cost;
@@ -44,4 +46,10 @@ public class Course extends TimeAuditable {
             joinColumns = @JoinColumn(name="course_id"),
             inverseJoinColumns = @JoinColumn(name="learner_id"))
     private List<Learner> learners;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<CourseNoti> courseNotis;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<CourseScore> courseScores;
 }

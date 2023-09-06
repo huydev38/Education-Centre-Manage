@@ -14,6 +14,7 @@ public class SearchCourseDTO extends SearchDTO{
     private Date end_date;
     @NotBlank
     private int status;
+
 }
 
 //khi search yeu cau chon status
