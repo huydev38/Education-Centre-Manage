@@ -29,6 +29,7 @@ public class TeacherService {
     TeacherRepo teacherRepo;
 
     public TeacherDTO convert(Teacher teacher){
+
         return new ModelMapper().map(teacher, TeacherDTO.class);
     }
 
@@ -36,6 +37,7 @@ public class TeacherService {
     public void create(TeacherDTO teacherDTO){
         UserDTO userDTO = teacherDTO.getUser();
         userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setRole("ROLE_TEACHER");
         teacherDTO.setUser(userDTO);
         teacherRepo.save(new ModelMapper().map(teacherDTO, Teacher.class));
     }
@@ -45,6 +47,7 @@ public class TeacherService {
         if(teacherRepo.findById(teacherDTO.getId()).isPresent()){
             UserDTO userDTO = teacherDTO.getUser();
             userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+            userDTO.setRole("ROLE_TEACHER");
             teacherDTO.setUser(userDTO);
             teacherRepo.save(new ModelMapper().map(teacherDTO, Teacher.class));
         }else{

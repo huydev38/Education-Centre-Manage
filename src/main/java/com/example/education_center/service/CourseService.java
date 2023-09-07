@@ -125,11 +125,14 @@ public class CourseService {
                 if (course.getIsOpen() == 1) {
                     course.getLearners().add(new ModelMapper().map(learnerDTO, Learner.class));
                     course.setRemain(course.getRemain() - 1);
-
+                    if(course.getRemain()==0){
+                        course.setIsOpen(0);
+                    }
                     courseRepo.save(course);
                     learner.setTuition_fee(learner.getTuition_fee() + course.getCost());
                     learner.getCourses().add(new ModelMapper().map(courseDTO, Course.class));
                     learnerRepo.save(learner);
+
                 } else {
                     throw new NotAvailableException("Cannot enroll to this course");
                 }
@@ -314,6 +317,43 @@ public class CourseService {
         }else if (searchScoreDTO.getCourseDTO() != null) {
             page = courseScoreRepo.searchByCourse(searchScoreDTO.getCourseDTO().getId(), pageRequest);
         }else if (searchScoreDTO.getLearnerDTO() != null) {
+            page = courseScoreRepo.searchByLearner(searchScoreDTO.getLearnerDTO().getId(), pageRequest);
+        }
+        PageDTO<List<CourseScoreDTO>> pageDTO = new PageDTO<>();
+        pageDTO.setTotalPages(page.getTotalPages());
+        pageDTO.setTotalElements(page.getTotalElements());
+        pageDTO.setSize(page.getSize());
+        //List<User> users = page.getContent();
+        List<CourseScoreDTO> courseDTOS = page.get().map(u -> convertScore(u)).collect(Collectors.toList());
+
+        //T: List<UserDTO>
+        pageDTO.setData(courseDTOS);
+        return pageDTO;
+    }
+
+
+    public PageDTO<List<CourseScoreDTO>> searchScoreByUser(SearchScoreDTO searchScoreDTO) {
+        Sort sortBy = Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
+
+
+        //sort theo yeu cau
+        if (StringUtils.hasText(searchScoreDTO.getSortedField())) { //check xem co empty khong
+            sortBy = Sort.by(searchScoreDTO.getSortedField());
+        }
+        if (searchScoreDTO.getCurrentPage() == null) {
+            searchScoreDTO.setCurrentPage(0);
+        }
+        if (searchScoreDTO.getSize() == null) {
+            searchScoreDTO.setSize(20);
+        }
+
+        //tao PageRequest de truyen vao Pageable
+        PageRequest pageRequest = PageRequest.of(searchScoreDTO.getCurrentPage(), searchScoreDTO.getSize(), sortBy);
+        Page<CourseScore> page = courseScoreRepo.findAll(pageRequest);
+
+        if(searchScoreDTO.getStart_date() != null && searchScoreDTO.getEnd_date() != null && searchScoreDTO.getLearnerDTO() != null) {
+            page = courseScoreRepo.searchByLearnerAndDate(searchScoreDTO.getCourseDTO().getId(), searchScoreDTO.getStart_date(), searchScoreDTO.getEnd_date(), pageRequest);
+        }else{
             page = courseScoreRepo.searchByLearner(searchScoreDTO.getLearnerDTO().getId(), pageRequest);
         }
         PageDTO<List<CourseScoreDTO>> pageDTO = new PageDTO<>();

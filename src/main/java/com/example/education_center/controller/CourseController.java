@@ -107,7 +107,7 @@ public class CourseController {
     }
 
     @GetMapping("/score/{id}")
-    public ResponseDTO<CourseScoreDTO> getCourseScore(@PathParam("id") int id) {
+    public ResponseDTO<CourseScoreDTO> getCourseScore(@PathVariable("id") int id) {
         return ResponseDTO.<CourseScoreDTO>builder().data(courseService.findByScoreId(id)).build();
     }
 }

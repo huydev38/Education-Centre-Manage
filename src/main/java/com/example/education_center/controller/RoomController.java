@@ -8,11 +8,14 @@ import com.example.education_center.dto.search.SearchRoomDTO;
 import com.example.education_center.entity.Room;
 import com.example.education_center.service.RoomService;
 import jakarta.websocket.server.PathParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/room")
 public class RoomController {
@@ -43,7 +46,10 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO<RoomDTO> getRoom(@PathParam("id") int id){
+    public ResponseDTO<RoomDTO> getRoom(@PathVariable("id") Integer id){
+//        if(id==null) {
+//            log.info("null id");
+//        }
         return ResponseDTO.<RoomDTO>builder().data(roomService.findById(id)).build();
     }
 

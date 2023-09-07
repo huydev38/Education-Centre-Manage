@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
 public interface TeacherRepo extends JpaRepository<Teacher, Integer> {
     @Query("select t from Teacher t where t.user.phone=:x")
     Page<Teacher> searchByPhone(@Param("x") String phone, Pageable pageable);

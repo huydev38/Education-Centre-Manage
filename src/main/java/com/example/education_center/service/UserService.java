@@ -1,6 +1,7 @@
 package com.example.education_center.service;
 
 import com.example.education_center.dto.UserDTO;
+import com.example.education_center.entity.Learner;
 import com.example.education_center.entity.User;
 import com.example.education_center.repos.UserRepo;
 import jakarta.transaction.Transactional;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +23,20 @@ public class UserService implements UserDetailsService {
     UserRepo userRepo;
 
     @Transactional
+    public void createAdmin(UserDTO userDTO){
+        userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setRole("ROLE_ADMIN");
+        userRepo.save(new ModelMapper().map(userDTO, User.class));
+    }
+
+    @Transactional
+    public void updateAdmin(UserDTO userDTO){
+        userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setRole("ROLE_ADMIN");
+        userRepo.save(new ModelMapper().map(userDTO, User.class));
+    }
+
+    @Transactional
     public void updatePassword(UserDTO userDTO) {
         if (userRepo.findById(userDTO.getId()).isPresent()) {
 
@@ -30,6 +46,11 @@ public class UserService implements UserDetailsService {
             userRepo.save(user);
 
         }
+    }
+
+    @Transactional
+    public void deleteAdmin(int id){
+        userRepo.deleteById(id);
     }
 
     public UserDTO findByUsername(String username) {
@@ -47,6 +68,10 @@ public class UserService implements UserDetailsService {
 
         authorities.add(new SimpleGrantedAuthority(userEntity.getRole()));
         return new org.springframework.security.core.userdetails.User(username, userEntity.getPassword(), authorities);
+    }
+
+    public UserDTO findById(int id) {
+        return new ModelMapper().map(userRepo.findById(id), UserDTO.class);
     }
 }
 

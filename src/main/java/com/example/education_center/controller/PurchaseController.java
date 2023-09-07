@@ -38,7 +38,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO<PurchaseDTO> getPurchase(@PathParam("id") int id){
+    public ResponseDTO<PurchaseDTO> getPurchase(@PathVariable("id") int id){
         return ResponseDTO.<PurchaseDTO>builder().data(purchaseService.findById(id)).build();
     }
 }

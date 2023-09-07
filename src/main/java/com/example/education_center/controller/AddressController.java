@@ -37,7 +37,7 @@ public class AddressController {
 
 
     @GetMapping("/{id}")
-    public ResponseDTO<AddressDTO> getAddress(@PathParam("id") int id){
+    public ResponseDTO<AddressDTO> getAddress(@PathVariable("id") int id){
         return ResponseDTO.<AddressDTO>builder().data(addressService.findById(id)).build();
     }
 

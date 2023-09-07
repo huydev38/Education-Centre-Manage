@@ -38,6 +38,7 @@ public class LearnerService {
     public void create(LearnerDTO learnerDTO){
         UserDTO userDTO = learnerDTO.getUser();
         userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+        userDTO.setRole("ROLE_LEARNER");
         learnerDTO.setUser(userDTO);
         learnerRepo.save(new ModelMapper().map(learnerDTO, Learner.class));
     }
@@ -47,6 +48,7 @@ public class LearnerService {
         if(learnerRepo.findById(learnerDTO.getId()).isPresent()){
             UserDTO userDTO = learnerDTO.getUser();
             userDTO.setPassword(new BCryptPasswordEncoder().encode(userDTO.getPassword()));
+            userDTO.setRole("ROLE_LEARNER");
             learnerDTO.setUser(userDTO);
             learnerRepo.save(new ModelMapper().map(learnerDTO, Learner.class));
         }else{

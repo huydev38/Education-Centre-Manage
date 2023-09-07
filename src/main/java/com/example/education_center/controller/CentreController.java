@@ -48,7 +48,7 @@ public class CentreController {
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO<CentreDTO> getCenter(@PathParam("id") int id){
+    public ResponseDTO<CentreDTO> getCenter(@PathVariable("id") int id){
         return ResponseDTO.<CentreDTO>builder().data(centreService.findById(id)).build();
     }
 }

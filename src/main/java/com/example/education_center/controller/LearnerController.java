@@ -53,7 +53,7 @@ public class LearnerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO<LearnerDTO> getLearner(@PathParam("id") int id){
+    public ResponseDTO<LearnerDTO> getLearner(@PathVariable("id") int id){
         return ResponseDTO.<LearnerDTO>builder().data(learnerService.findById(id)).build();
     }
 
@@ -118,7 +118,17 @@ public class LearnerController {
                 .status(200).msg("Success").build();
     }
 
-//    @PostMapping("/getScore")
-//    //TODO
+    @PostMapping("/getScore")
+    public ResponseDTO<PageDTO<List<CourseScoreDTO>>> getAllScore(@RequestBody SearchScoreDTO searchScoreDTO, Principal p){
+        //khong can input learnerDTO trong search
+        UserDTO user = userService.findByUsername(p.getName());
+        LearnerDTO l = learnerService.findByUserId(user.getId());
+        searchScoreDTO.setLearnerDTO(l);
+        return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseService.searchScoreByUser(searchScoreDTO)).msg("Success").status(200).build();
+
+    }
+
+
+
 
 }

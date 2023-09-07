@@ -45,9 +45,9 @@ public class SecurityConfig {
     public SecurityFilterChain config(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.authorizeHttpRequests((authz)->authz
                         .requestMatchers(needAuth).authenticated()
-                        .requestMatchers(teacherAllows).hasAuthority("TEACHER")
-                .requestMatchers(learnerAllows).hasAuthority("LEARNER")
-                .requestMatchers(adminAllows).hasAuthority("ADMIN")
+                        .requestMatchers(teacherAllows).hasRole("TEACHER")
+                .requestMatchers(learnerAllows).hasRole("LEARNER")
+                .requestMatchers(adminAllows).hasRole("ADMIN")
                 .anyRequest().permitAll()).httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable) //de dung jwt
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.NEVER));

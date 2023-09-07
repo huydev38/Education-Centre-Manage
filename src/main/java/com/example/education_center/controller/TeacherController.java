@@ -79,7 +79,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}")
-    public ResponseDTO<TeacherDTO> getTeacher(@PathParam("id") int id){
+    public ResponseDTO<TeacherDTO> getTeacher(@PathVariable("id") int id){
         return ResponseDTO.<TeacherDTO>builder().data(teacherService.findById(id)).build();
     }
 }
