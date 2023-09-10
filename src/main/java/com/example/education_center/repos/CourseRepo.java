@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
+import java.util.List;
 
 public interface CourseRepo extends JpaRepository<Course,Integer> {
 
@@ -21,6 +22,11 @@ public interface CourseRepo extends JpaRepository<Course,Integer> {
     @Query("select c from Course c where c.status=:y and c.start_date between :s and :e ")
     Page<Course> searchByDate(@Param("s") Date start_date, @Param("e") Date end_date, @Param("y") int status, Pageable pageable);
 
+    @Query("select c from Course c WHERE c.status=1 and c.end_date <= :x")
+    List<Course> searchByEndDateAndStatus(@Param("x") Date date);
+
+    @Query("select c from Course c WHERE c.isOpen=1 and c.start_date >= :x")
+    List<Course> searchByStartDateAndIsOpen(@Param("x") Date date);
 
 
 }

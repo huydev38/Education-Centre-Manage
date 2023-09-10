@@ -4,10 +4,8 @@ import com.example.education_center.dto.*;
 import com.example.education_center.dto.search.SearchCourseDTO;
 import com.example.education_center.dto.search.SearchNotiDTO;
 import com.example.education_center.dto.search.SearchScoreDTO;
-import com.example.education_center.entity.Course;
-import com.example.education_center.entity.CourseNoti;
-import com.example.education_center.entity.CourseScore;
-import com.example.education_center.entity.Learner;
+import com.example.education_center.email.EmailService;
+import com.example.education_center.entity.*;
 import com.example.education_center.exception.NotAvailableException;
 import com.example.education_center.exception.NotFoundException;
 import com.example.education_center.repos.*;
@@ -21,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.util.DateUtil.now;
 
 @Service
 public class CourseService {
@@ -40,6 +41,9 @@ public class CourseService {
 
     @Autowired
     CourseScheduleRepo courseScheduleRepo;
+
+    @Autowired
+    EmailService emailService;
 
     public CourseDTO convertCourse(Course course){
         return new ModelMapper().map(course, CourseDTO.class);
@@ -180,6 +184,13 @@ public class CourseService {
 
     @Transactional
     public void addNoti(CourseNotiDTO courseNotiDTO){
+        List<LearnerDTO> learners = courseNotiDTO.getCourse().getLearners();
+
+        for(LearnerDTO l: learners){
+            UserDTO u = l.getUser();
+            emailService.sendNotiEmail(u.getEmail(), courseNotiDTO.getMsg(), courseNotiDTO.getCourse().getName());
+        }
+
         courseNotiRepo.save(new ModelMapper().map(courseNotiDTO, CourseNoti.class));
     }
 
@@ -386,5 +397,25 @@ public class CourseService {
     public CourseScoreDTO findByScoreId(int id) {
         return new ModelMapper().map(courseScoreRepo.findById(id), CourseScoreDTO.class);
     }
+
+    public void checkStatus(){
+        Date now= new Date();
+        List<Course> list = courseRepo.searchByEndDateAndStatus(now);
+        for(Course c: list){
+            c.setStatus(0);
+            courseRepo.save(c);
+        }
+    }
+
+    public void checkOpen(){
+        Date now= new Date();
+        List<Course> list = courseRepo.searchByStartDateAndIsOpen(now);
+        for(Course c: list){
+            c.setIsOpen(0);
+            courseRepo.save(c);
+        }
+    }
+
+
 
 }

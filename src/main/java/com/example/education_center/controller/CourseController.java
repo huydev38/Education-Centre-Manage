@@ -53,6 +53,7 @@ public class CourseController {
     @PostMapping("/noti")
     public ResponseDTO<Void> newNoti(@RequestBody CourseNotiDTO courseNotiDTO){
         courseService.addNoti(courseNotiDTO);
+
         return ResponseDTO.<Void>builder().msg("Success").status(200).build();
     }
 

@@ -1,6 +1,7 @@
 package com.example.education_center.service;
 
 import com.example.education_center.dto.UserDTO;
+import com.example.education_center.email.EmailService;
 import com.example.education_center.entity.Learner;
 import com.example.education_center.entity.User;
 import com.example.education_center.repos.UserRepo;
@@ -14,13 +15,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
     @Autowired
     UserRepo userRepo;
+
+    @Autowired
+    EmailService emailService;
+
+    public UserDTO convert(User user){
+        return new ModelMapper().map(user, UserDTO.class);
+    }
 
     @Transactional
     public void createAdmin(UserDTO userDTO){
@@ -72,6 +83,10 @@ public class UserService implements UserDetailsService {
 
     public UserDTO findById(int id) {
         return new ModelMapper().map(userRepo.findById(id), UserDTO.class);
+    }
+
+    public List<UserDTO> findUserByBirthday(Date now) {
+        return userRepo.findByBirthdate(now).stream().map(this::convert).collect(Collectors.toList());
     }
 }
 
