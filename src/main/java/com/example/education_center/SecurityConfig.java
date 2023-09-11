@@ -38,6 +38,7 @@ public class SecurityConfig {
 
     @Autowired
     public void config(AuthenticationManagerBuilder auth) throws Exception{
+
         auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
@@ -59,6 +60,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)throws Exception{
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 
 
 

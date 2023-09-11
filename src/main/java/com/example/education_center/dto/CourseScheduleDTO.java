@@ -28,4 +28,6 @@ public class CourseScheduleDTO {
 
     private RoomDTO room;
 
+
+
 }
