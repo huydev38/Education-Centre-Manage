@@ -7,9 +7,7 @@ import com.example.education_center.dto.search.SearchScoreDTO;
 import com.example.education_center.entity.User;
 import com.example.education_center.exception.NotAuthenticateException;
 import com.example.education_center.exception.NotFoundException;
-import com.example.education_center.service.CourseService;
-import com.example.education_center.service.LearnerService;
-import com.example.education_center.service.UserService;
+import com.example.education_center.service.*;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +28,12 @@ public class LearnerController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CourseScoreService courseScoreService;
+
+    @Autowired
+    CourseNotiService courseNotiService;
 
 
 
@@ -65,7 +69,7 @@ public class LearnerController {
     @PostMapping("/getGPA")
     public ResponseDTO<Double> getGpa(@RequestBody SearchScoreDTO searchScoreDTO, Principal p) throws NotAuthenticateException {
         if(p.getName().equals(searchScoreDTO.getLearnerDTO().getName())){
-            return ResponseDTO.<Double>builder().data(courseService.getGPA(searchScoreDTO)).build();
+            return ResponseDTO.<Double>builder().data(courseScoreService.getGPA(searchScoreDTO)).build();
         }
         else{
             throw new NotAuthenticateException("Invalid username");
@@ -86,7 +90,7 @@ public class LearnerController {
         LearnerDTO l = learnerService.findByUserId(user.getId());
         List<LearnerDTO> list = courseService.findById(searchNotiDTO.getCourseDTO().getId()).getLearners();
         if(checkExist(list, l.getId())){
-           return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseService.searchNoti(searchNotiDTO))
+           return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseNotiService.searchNoti(searchNotiDTO))
                    .msg("Success").status(200).build();
         }
         else{
@@ -99,7 +103,7 @@ public class LearnerController {
         LearnerDTO l = learnerService.findByUserId(user.getId());
         List<LearnerDTO> list = courseService.findById(searchScoreDTO.getCourseDTO().getId()).getLearners();
         if(checkExist(list, l.getId())){
-            return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseService.searchScore(searchScoreDTO))
+            return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseScoreService.searchScore(searchScoreDTO))
                     .msg("Success").status(200).build();
         }
         else{
@@ -114,7 +118,7 @@ public class LearnerController {
         UserDTO user = userService.findByUsername(p.getName());
         LearnerDTO l = learnerService.findByUserId(user.getId());
         List<CourseDTO> listCourse = l.getCourses();
-        return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseService.searchNotiByLearner(searchNotiDTO,listCourse))
+        return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseNotiService.searchNotiByLearner(searchNotiDTO,listCourse))
                 .status(200).msg("Success").build();
     }
 
@@ -124,7 +128,7 @@ public class LearnerController {
         UserDTO user = userService.findByUsername(p.getName());
         LearnerDTO l = learnerService.findByUserId(user.getId());
         searchScoreDTO.setLearnerDTO(l);
-        return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseService.searchScoreByUser(searchScoreDTO)).msg("Success").status(200).build();
+        return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseScoreService.searchScoreByUser(searchScoreDTO)).msg("Success").status(200).build();
 
     }
 

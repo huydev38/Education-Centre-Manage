@@ -29,8 +29,8 @@ public class SecurityConfig {
     //TODO: sua lai array cho tung doi tuong
     //Ngoai doi tuong nay ra thi cho vao tat
     String []teacherAllows={"/course/**"};
-    String []learnerAllows={"/room/"};
-    String []adminAllows={"/course/**"};
+    String []learnerAllows={"course/**"};
+    String []adminAllows={"/course/"};
 
     String []needAuth={"/course/"};
     @Autowired

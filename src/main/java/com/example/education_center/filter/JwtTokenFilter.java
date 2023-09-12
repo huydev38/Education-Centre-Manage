@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class JwtTokenFilter extends GenericFilterBean {
 
     @Autowired
     JwtTokenService jwtTokenService;
@@ -28,7 +28,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     UserDetailsService userDetailsService;
 
     @Override
-    public void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String bearerToken = ((HttpServletRequest) servletRequest).getHeader("Authorization");
         log.info(bearerToken);
         if(bearerToken!=null && bearerToken.startsWith("Bearer ")){

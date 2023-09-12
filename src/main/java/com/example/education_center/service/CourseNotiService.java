@@ -53,7 +53,7 @@ public class CourseNotiService {
     }
 
     public PageDTO<List<CourseNotiDTO>> searchNoti(SearchNotiDTO searchNotiDTO){
-        Sort sortBy=Sort.by("id").ascending(); //sap xep theo ten va tuoi (mac dinh)
+        Sort sortBy=Sort.by("id").ascending();
 
 
         //sort theo yeu cau
