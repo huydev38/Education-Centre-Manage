@@ -76,40 +76,7 @@ public class LearnerController {
         }
     }
 
-    public boolean checkExist(List<LearnerDTO>list, int id){
-        for(LearnerDTO l:list){
-            if(l.getId()==id){
-                return true;
-            }
-        }
-        return false;
-    }
-    @PostMapping("/getCourseNoti")
-    public ResponseDTO<PageDTO<List<CourseNotiDTO>>> getCourseNoti(@RequestBody SearchNotiDTO searchNotiDTO, Principal p) throws NotAuthenticateException {
-        UserDTO user = userService.findByUsername(p.getName());
-        LearnerDTO l = learnerService.findByUserId(user.getId());
-        List<LearnerDTO> list = courseService.findById(searchNotiDTO.getCourseDTO().getId()).getLearners();
-        if(checkExist(list, l.getId())){
-           return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseNotiService.searchNoti(searchNotiDTO))
-                   .msg("Success").status(200).build();
-        }
-        else{
-            throw new NotAuthenticateException("Invalid username");
-        }
-    }
-    @PostMapping("/getCourseScore")
-    public ResponseDTO<PageDTO<List<CourseScoreDTO>>> getCourseScore(@RequestBody SearchScoreDTO searchScoreDTO, Principal p) throws NotAuthenticateException {
-        UserDTO user = userService.findByUsername(p.getName());
-        LearnerDTO l = learnerService.findByUserId(user.getId());
-        List<LearnerDTO> list = courseService.findById(searchScoreDTO.getCourseDTO().getId()).getLearners();
-        if(checkExist(list, l.getId())){
-            return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseScoreService.searchScore(searchScoreDTO))
-                    .msg("Success").status(200).build();
-        }
-        else{
-            throw new NotAuthenticateException("Invalid username");
-        }
-    }
+
 
     //all noti
     //khong can dien courseDTO

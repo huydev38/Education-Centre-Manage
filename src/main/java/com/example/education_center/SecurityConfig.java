@@ -29,10 +29,10 @@ public class SecurityConfig {
     //TODO: sua lai array cho tung doi tuong
     //Ngoai doi tuong nay ra thi cho vao tat
     String []teacherAllows={"/course/**"};
-    String []learnerAllows={"course/**"};
+    String []learnerAllows={"/room/**","/course/**"};
     String []adminAllows={"/course/"};
 
-    String []needAuth={"/course/"};
+    String []needAuth={"/room/"};
     @Autowired
     UserDetailsService userDetailsService;
 
@@ -45,13 +45,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain config(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.authorizeHttpRequests((authz)->authz
-                        .requestMatchers(needAuth).authenticated()
+                        .requestMatchers(learnerAllows).hasAnyRole("LEARNER")
+
                         .requestMatchers(teacherAllows).hasRole("TEACHER")
-                .requestMatchers(learnerAllows).hasRole("LEARNER")
                 .requestMatchers(adminAllows).hasRole("ADMIN")
+                        .requestMatchers(needAuth).authenticated()
                 .anyRequest().permitAll()).httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable) //de dung jwt
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.NEVER));
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }

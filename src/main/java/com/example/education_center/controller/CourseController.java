@@ -3,16 +3,18 @@ package com.example.education_center.controller;
 
 import com.example.education_center.dto.*;
 import com.example.education_center.dto.search.SearchCourseDTO;
+import com.example.education_center.dto.search.SearchNotiDTO;
 import com.example.education_center.dto.search.SearchScoreDTO;
+import com.example.education_center.exception.NotAuthenticateException;
 import com.example.education_center.exception.NotAvailableException;
 import com.example.education_center.exception.NotFoundException;
-import com.example.education_center.service.CourseNotiService;
-import com.example.education_center.service.CourseScoreService;
-import com.example.education_center.service.CourseService;
+import com.example.education_center.service.*;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -23,10 +25,25 @@ public class CourseController {
     CourseService courseService;
 
     @Autowired
+    LearnerService learnerService;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
     CourseNotiService courseNotiService;
 
     @Autowired
     CourseScoreService courseScoreService;
+
+    public boolean checkExist(List<LearnerDTO>list, int id){
+        for(LearnerDTO l:list){
+            if(l.getId()==id){
+                return true;
+            }
+        }
+        return false;
+    }
 
     @PostMapping("/")
     public ResponseDTO<Void> createCourse(@RequestBody CourseDTO courseDTO) throws NotAvailableException {
@@ -117,5 +134,47 @@ public class CourseController {
     @GetMapping("/score/{id}")
     public ResponseDTO<CourseScoreDTO> getCourseScore(@PathVariable("id") int id) {
         return ResponseDTO.<CourseScoreDTO>builder().data(courseScoreService.findByScoreId(id)).build();
+    }
+
+    //admin, teacher
+    @PostMapping("/add")
+    public ResponseDTO<Void> addLearner(@RequestParam("course_id") int course_id, @RequestParam("learner_id")int leaner_id) throws NotFoundException, NotAvailableException {
+        courseService.addLearner(leaner_id, course_id);
+        return ResponseDTO.<Void>builder().msg("Success").status(200).build();
+    }
+
+    @PostMapping("/enroll")
+    public ResponseDTO<Void> enrollCourse(@RequestParam("course_id")int course_id, Principal p) throws NotFoundException, NotAvailableException {
+        UserDTO user = userService.findByUsername(p.getName());
+        LearnerDTO l = learnerService.findByUserId(user.getId());
+        courseService.registerCourse(course_id, l.getId());
+        return ResponseDTO.<Void>builder().msg("Success").status(200).build();
+    }
+
+    @PostMapping("/getCourseNoti")
+    public ResponseDTO<PageDTO<List<CourseNotiDTO>>> getCourseNoti(@RequestBody SearchNotiDTO searchNotiDTO, Principal p) throws NotAuthenticateException {
+        UserDTO user = userService.findByUsername(p.getName());
+        LearnerDTO l = learnerService.findByUserId(user.getId());
+        List<LearnerDTO> list = courseService.findById(searchNotiDTO.getCourseDTO().getId()).getLearners();
+        if(checkExist(list, l.getId())){
+            return ResponseDTO.<PageDTO<List<CourseNotiDTO>>>builder().data(courseNotiService.searchNoti(searchNotiDTO))
+                    .msg("Success").status(200).build();
+        }
+        else{
+            throw new NotAuthenticateException("Invalid username");
+        }
+    }
+    @PostMapping("/getCourseScore")
+    public ResponseDTO<PageDTO<List<CourseScoreDTO>>> getCourseScore(@RequestBody SearchScoreDTO searchScoreDTO, Principal p) throws NotAuthenticateException {
+        UserDTO user = userService.findByUsername(p.getName());
+        LearnerDTO l = learnerService.findByUserId(user.getId());
+        List<LearnerDTO> list = courseService.findById(searchScoreDTO.getCourseDTO().getId()).getLearners();
+        if(checkExist(list, l.getId())){
+            return ResponseDTO.<PageDTO<List<CourseScoreDTO>>>builder().data(courseScoreService.searchScore(searchScoreDTO))
+                    .msg("Success").status(200).build();
+        }
+        else{
+            throw new NotAuthenticateException("Invalid username");
+        }
     }
 }

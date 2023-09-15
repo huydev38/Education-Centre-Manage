@@ -19,11 +19,11 @@ public class ExceptionController{
         return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler({NotAuthenticateException.class})
-//    public ResponseEntity<Object> notFound(NotAuthenticateException e){
-//
-//        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
-//    }
+    @ExceptionHandler({NotAuthenticateException.class})
+    public ResponseEntity<Object> notFound(NotAuthenticateException e){
+
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
+    }
 
     @ExceptionHandler({NotAvailableException.class})
     public ResponseEntity<Object> notFound(NotAvailableException e){
